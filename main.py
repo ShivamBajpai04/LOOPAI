@@ -25,6 +25,26 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Data Ingestion API", lifespan=lifespan)
 
+@app.get("/")
+async def root():
+    """Root endpoint providing API information."""
+    return {
+        "message": "Data Ingestion API",
+        "version": "1.0.0",
+        "endpoints": {
+            "POST /ingest": "Submit data for ingestion",
+            "GET /status/{ingestion_id}": "Check ingestion status",
+            "GET /health": "Health check"
+        },
+        "docs": "/docs",
+        "redoc": "/redoc"
+    }
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "healthy", "service": "Data Ingestion API"}
+
 def create_batches(ids: List[int], batch_size: int = 3) -> List[Batch]:
     """Split IDs into batches of specified size."""
     return [
@@ -79,4 +99,4 @@ async def get_status(ingestion_id: str) -> IngestionStatusResponse:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    uvicorn.run(app, host="0.0.0.0", port=8000)
